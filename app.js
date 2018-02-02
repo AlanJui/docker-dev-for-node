@@ -3,8 +3,8 @@ var app = express();
 
 app.use(express.static('public'));
 
-app.get('/hello', function (req, res) {
-  res.send('world');
+app.get('/api/hello', function (req, res) {
+  res.send('hello world fro NodeJS');
 });
 
 app.listen(3000);
