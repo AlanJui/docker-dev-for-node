@@ -81,25 +81,26 @@ docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 http://localhost:3000
 ```
 
-### 「個人開發環境」建置作業程序 V0.1 待改善事項
+### 「個人開發環境」建置作業程序 V0.1 的問題
 
 上述之「個人開發環境」雖已可用，但在進行後續的開發工作（例如：在 index.html 檔案中增添內容）。
 每當要觀察新的結果，得經過 4 道人工操作的作業程序，開發工作因而形成「有些不便」。
 
 (0) 變更 index.html 內容。
-   ```html
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <title>Docker DEV Workflow</title>
-    </head>
-    <body>
-      <h1>Hello NodeJS</h1>
-      <p>Developement process</p>
-    </body>
-    </html>
-    ```  
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Docker DEV Workflow</title>
+</head>
+<body>
+  <h1>Hello NodeJS</h1>
+  <p>Developement process</p>
+</body>
+</html>
+```
 
 (1) 終止 Docker Container 的執行。
 
@@ -125,6 +126,8 @@ docker build -t my-node-app .
 docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 ```
 
+---
+
 ### 「個人開發環境」建置作業程序 V0.2
 
 改善上述問題，設定「改善目標」為：當 .html 檔案的內容有所變更時，不必重新建置 Docker Container 便能觀察變更後的結果。
@@ -139,7 +142,7 @@ docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
 ```
 
-### 「個人開發環境」建置作業程序 V0.2 待改善事項
+### 「個人開發環境」建置作業程序 V0.2 的問題
 
 `「個人開發環境」建置作業程序 V0.2 ` ，改善了 .html 檔案內容有所變更，卻無法立即觀察結果的問題。
 但變更 .js 檔案，卻無法產生同樣的結果。
@@ -186,11 +189,8 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 (6) 再次自瀏覽器觀察 URL: http://localhost:3000/api/hello 的輸出結果。
 
 
+---
 
-
-```bash
-docker run -it --name=my-node-app-container -rm -v $(pwd):/app -p 3000:3000 my-node-app
-```
 
 ### 「個人開發環境」建置作業程序 V0.3
 
@@ -205,6 +205,7 @@ docker run -it --name=my-node-app-container -rm -v $(pwd):/app -p 3000:3000 my-n
 ```bash
 docker run -it --name=my-node-app-container --rm -v $(pwd):/app -p 3000:3000 my-node-app
 ```
+
 
 ---
 
