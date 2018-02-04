@@ -114,7 +114,7 @@ http://localhost:3000
 
 __【前版待改善議題】__
 
-前版作業程序，已成功完成「個人開發環境」的初步建置。但在進行後續的開發工作，每當 .html 檔案的內容有所變更（例如：在 index.html 增添內容），
+前版作業程序 V0.1，已成功完成「個人開發環境」的初步建置。但在進行後續的開發工作，每當 .html 檔案的內容有所變更（例如：在 index.html 增添內容），
 非經如下所述 4 道操作程序，則無法看到變更後的輸出結果，故而使得開發作業「不夠順暢」。
 
 #### (1) 變更 index.html 檔案，加入內容： `<p>Developement process</p>` 。
@@ -220,10 +220,10 @@ http://localhost:3000
 
 __【前版待改善議題】__
 
-`「個人開發環境」建置作業程序 V0.2 ` ，改善了 .html 檔案內容有所變更，卻無法立即觀察結果的問題。
-但變更 .js 檔案，卻無法產生同樣的結果。
+前版作業程序 V0.2，雖已改善了 .html 檔案內容已變更，卻無法立即看到結果的問題。
+但 .js 檔案的變更，卻無法產生同樣的結果。
 
-例如：加入 API 功能
+例如：加入 API 功能。
 
 #### (1) 編輯 app.js 檔案，加入 API 功能： GET /api/hello。
 
@@ -240,43 +240,37 @@ app.get('/api/hello', function (req, res) {
 app.listen(3000);
 ```
 
-(2) 自瀏覽器輸入 URL: http://localhost:3000/api/hello 。
+#### (2) 自瀏覽器輸入 URL: http://localhost:3000/api/hello 。
 
 結果自瀏覽器，看到系統發出的問題：「Cannot GET /api/hello」。
 
-(3) 終止 Docker Container 。
+#### (3) 終止 Docker Container 。
 
 ```bash
 docker kill my-node-app-container
 ```
 
-(4) 刪除 Docker Container 。
+#### (4) 刪除 Docker Container 。
 
 ```bash
 docker rm my-node-app-container
 ```
 
-(5) 重新啟動 Docker Container 。
+#### (5) 重新啟動 Docker Container 。
 
 ```bash
 docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
 ```
 
-(6) 再次自瀏覽器觀察 URL: http://localhost:3000/api/hello 的輸出結果。
+#### (6) 在瀏覽器輸入以下網址，觀察輸出結果，終於能看到變更後的新結果。
+         
+```
+http://localhost:3000/api/hello
+```
 
 __【本版改善事項】__
 
-改善 `個人開發環境」建置作業程序 V0.2` 的問題，設定「改善目標」為：省去：「刪除 Docker Container」的步驟。
-
-變更「作業程序」中「步驟(5)」的 Bash 指令，使用 Docker 指令中的 --rm 參數，要求 Docker Container 在終止時（指令：stop 、 kill），能自動刪除 Docker Container 。 
-
-(5) 啟動 Docker Container 與執行「開發中系統」。
-
-原 Bash 指令中，加入新參數： `--rm` 。
-
-```bash
-docker run -it --name=my-node-app-container --rm -v $(pwd):/app -p 3000:3000 my-node-app
-```
+變更 .js 檔案，可立即觀察到結果。 ==> nodemon
 
 __【驗證改善結果】__
 
@@ -287,7 +281,7 @@ __【驗證改善結果】__
 
 __【前版待改善議題】__
 
-變更 .js 檔案，可立即觀察到結果。 ==> nodemon
+應用系統得要使用 DB，如： mongode ，此時，啟動 docker container 得分別執行，一個給 web 用，一個給 db 用。
 
 __【本版改善事項】__ 
 
@@ -301,13 +295,15 @@ __【驗證改善結果】__
 
 __【前版待改善議題】__
 
-待開發系統需要用到 DB 時。 ==> docker-compose
+XXX
 
 __【本版改善事項】__
 
+XXXX
 
 __【驗證改善結果】__
 
+XXX
 
 ---
 
