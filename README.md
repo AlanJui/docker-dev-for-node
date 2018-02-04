@@ -327,7 +327,8 @@ world
 
 __【本版改善事項】__
 
-變更 .js 檔案，可立即觀察到結果。 ==> nodemon
+安裝 NodeJS 套件： `nodemon` ，令開發中之「應用系統」能處理：「遇有 .js 檔案內容已變更」事件，能自動重新啟動應用系統，
+使得開發人員可立即觀察最新的輸出結果。
 
 __【驗證改善結果】__
 
@@ -351,6 +352,16 @@ npm install --save-dev nodemon
 
 #### (4) 修訂 package.json ，改 npm start。
 
+變更：node app.js ，改為：nodemon app.js 。
+
+```javascript
+    "scripts": {
+        ...
+        "start": "nodemon app.js"
+    },
+```
+
+修訂後結果：
 ```npm
 {
   "name": "docker-dev-workflow-express",
@@ -387,7 +398,7 @@ docker run -it --name=web -v $(pwd):/app -p 3000:3000 node-app
 
 #### (6) 變更 API ，令 GET /api/hello 的輸出結果為： docker。
 
-修訂 app.js 檔案的內容，
+在 app.js 檔案，修訂如下之程式碼：
 
 ```javascript
 ...
