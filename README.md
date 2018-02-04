@@ -4,21 +4,29 @@
 若是導入「Docker Compose + Docker Machine」之 VM 虛擬化技術，
 在作業流程應安排之程序，及該注意之事項。
 
-# 系統開發作業
 
-## 建置「個人開發環境」作業程序
+# 「個人開發環境」建置作業程序
 
-開發人員在專案中，使用「純 Docker 技術」（僅使用 Dockerfile 檔案），從事「個人開發環之建置及使用」：
+「系統開發」專案，開發人員需要建置個人所操作使用之「開發環境」，以便進行下列之系統開發工作：
 
- (1) 建置 Docker Image 檔案，以便後續能自 Docker Image 產生 Docker Container；
+ - 撰寫程式碼
+ - 執行單元測試
+ - 觀察已完成部份之系統功能
 
- (2) 在 Docker Container 執行已撰寫程式碼之執行結果、除錯。
+## 「個人開發環境」建置作業程序 V0.1
+
+引進「Docker 技術」（僅使用 Dockerfile 檔案），用於建置開發人員所使用之「個人開發環境」。
+
+以下之「『個人開發環境』作業程序」，主要之工作目的可分為：
+
+ - 建置 Docker Image 檔案，以便後續能自 Docker Image 產生 Docker Container；
+
+ - 在 Docker Container 執行已撰寫程式碼之執行結果、除錯。
  
-### 「個人開發環境」建置作業程序 V0.1
 
-執行以下「作業程序」，完成開發人員使用「個人開發環境」之建置工作。
+### 1. 建立 Dockerfile 檔案。
 
-(1) 建 Dockerfile 
+建立 Dockerfile ，並放入如下所示之內容，以為建置（Build） Docker Image 檔案所用之「腳本描述」（Build Script）。
 
 ```docker
 FROM    node:4.7.0
@@ -31,35 +39,52 @@ RUN     cd /app; npm install npm@5.6.0 -g; npm install
 CMD     ["node", "app.js"]
 ```    
 
-(2) 完成初階 App:
+### 2. 建立專案套件管理檔案
 
- - 2.1 建立 App 主程式檔： /app/app.js
+(1) 指定 NodeJS 引擎版本。以下案例之 n ，可改用 nvm 或其它。
+
+```bash
+n 4.7.0
+```
+
+(2) 建立「專案套件管理」 檔案： package.json。
+
+```bash
+npm init -y
+npm install --save express
+```
+
+### 3. 執行「系統開發」之「程式碼撰寫」工作。
+
+完成初步之「系統架構」，撰寫以下之原始程式碼：
+
+(1) 建立系統之主程式檔： /app/app.js
         
-    ```javascript
-    var express = require('express');
-    var app = express();
-    
-    app.use(express.static('public'));
-    
-    app.listen(3000);
-    ```    
-    
-  - 2.2 建立「首頁檔」： /app/public/index.html
-  
-    ```html
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <title>Docker DEV Workflow</title>
-    </head>
-    <body>
-      <h1>Hello NodeJS</h1>
-    </body>
-    </html>
-    ```  
+```javascript
+var express = require('express');
+var app = express();
 
-(4) 建置 Docker Image 檔案。
+app.use(express.static('public'));
+
+app.listen(3000);
+```    
+
+(2) 建立畫面之「首頁檔」： /app/public/index.html
+  
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Docker DEV Workflow</title>
+</head>
+<body>
+  <h1>Hello NodeJS</h1>
+</body>
+</html>
+```  
+
+### 4. 建置 Docker Image 檔案。
 
 自本前所在之目錄，透過 Dockerfile 腳本檔案內的建置指示，建置 Docker Image 檔案，並將輸出的檔案命名為：node-app 。
 
@@ -67,7 +92,7 @@ CMD     ["node", "app.js"]
 docker build -t my-node-app .
 ```    
 
-(5) 啟動 Docker Container 與執行「開發中系統」。
+### 5. 啟動 Docker Container ，執行開發中之「應用系統」。
 
 自已建置的 Docker Image 檔案：my-node-app ，建置 Docker Container ，並將之命名為： my-node-app 。
 
@@ -75,13 +100,15 @@ docker build -t my-node-app .
 docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 ```
 
-(6) 使用瀏覽器觀察執行輸出之結果。
+### 6. 使用瀏覽器觀察執行輸出之結果。
 
 ```bash
 http://localhost:3000
 ```
 
-### 「個人開發環境」建置作業程序 V0.1 的問題
+## 「個人開發環境」建置作業程序 V0.2
+
+### 「個人開發環境」建置作業程序 V0.1 待改善議題
 
 上述之「個人開發環境」雖已可用，但在進行後續的開發工作（例如：在 index.html 檔案中增添內容）。
 每當要觀察新的結果，得經過 4 道人工操作的作業程序，開發工作因而形成「有些不便」。
@@ -126,9 +153,8 @@ docker build -t my-node-app .
 docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 ```
 
----
+### 改善後之「個人開發環境」建置作業程序 V0.2
 
-### 「個人開發環境」建置作業程序 V0.2
 
 改善上述問題，設定「改善目標」為：當 .html 檔案的內容有所變更時，不必重新建置 Docker Container 便能觀察變更後的結果。
 
@@ -142,7 +168,9 @@ docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
 ```
 
-### 「個人開發環境」建置作業程序 V0.2 的問題
+## 「個人開發環境」建置作業程序 V0.3
+
+### 「個人開發環境」建置作業程序 V0.2 的待改善議題
 
 `「個人開發環境」建置作業程序 V0.2 ` ，改善了 .html 檔案內容有所變更，卻無法立即觀察結果的問題。
 但變更 .js 檔案，卻無法產生同樣的結果。
@@ -188,11 +216,7 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 
 (6) 再次自瀏覽器觀察 URL: http://localhost:3000/api/hello 的輸出結果。
 
-
----
-
-
-### 「個人開發環境」建置作業程序 V0.3
+### 改善後之「個人開發環境」建置作業程序 V0.3
 
 改善 `個人開發環境」建置作業程序 V0.2` 的問題，設定「改善目標」為：省去：「刪除 Docker Container」的步驟。
 
@@ -205,6 +229,18 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 ```bash
 docker run -it --name=my-node-app-container --rm -v $(pwd):/app -p 3000:3000 my-node-app
 ```
+
+---
+
+### 「個人開發環境」建置作業程序 V0.4
+
+變更 .js 檔案，可立即觀察到結果。 ==> nodemon 
+
+---
+
+### 「個人開發環境」建置作業程序 V0.5
+
+待開發系統需要用到 DB 時。 ==> docker-compose
 
 
 ---
