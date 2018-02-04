@@ -13,6 +13,8 @@
  - 執行單元測試
  - 觀察已完成部份之系統功能
 
+---
+
 ## 「個人開發環境」建置作業程序 V0.1
 
 引進「Docker 技術」（僅使用 Dockerfile 檔案），用於建置開發人員所使用之「個人開發環境」。
@@ -41,13 +43,13 @@ CMD     ["node", "app.js"]
 
 ### 2. 建立專案套件管理檔案
 
-#### (1) 指定 NodeJS 引擎版本。以下案例之 n ，可改用 nvm 或其它。__
+#### (1) 指定 NodeJS 引擎版本。以下案例之 n ，可改用 nvm 或其它。
 
 ```bash
 n 4.7.0
 ```
 
-#### (2) 建立「專案套件管理」 檔案： package.json。__
+#### (2) 建立「專案套件管理」 檔案： package.json。
 
 ```bash
 npm init -y
@@ -58,7 +60,7 @@ npm install --save express
 
 完成初步之「系統架構」，撰寫以下之原始程式碼：
 
-__(1) 建立系統之主程式檔： /app/app.js。__
+#### (1) 建立系統之主程式檔： /app/app.js。
         
 ```javascript
 var express = require('express');
@@ -69,7 +71,7 @@ app.use(express.static('public'));
 app.listen(3000);
 ```    
 
-__(2) 建立畫面之「首頁檔」： /app/public/index.html。__
+#### (2) 建立畫面之「首頁檔」： /app/public/index.html。
   
 ```html
 <!DOCTYPE html>
@@ -94,15 +96,15 @@ docker build -t my-node-app .
 
 ### 5. 啟動 Docker Container ，執行開發中之「應用系統」。
 
-自已建置的 Docker Image 檔案：my-node-app ，建置 Docker Container ，並將之命名為： my-node-app 。
+自已建置的 Docker Image 檔案：my-node-app ，產生 Docker Container ，並將之命名為： my-node-app 。
 
 ```bash
 docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 ```
 
-### 6. 使用瀏覽器操作開發中之「應用系統」，並觀察功能之輸出結果。
+### 6. 在瀏覽器輸入以下網址，觀察開發中「應用系統」的輸出結果。
 
-```bash
+```
 http://localhost:3000
 ```
 
@@ -112,10 +114,10 @@ http://localhost:3000
 
 __【前版待改善議題】__
 
-上述之「個人開發環境」雖已可用，但在進行後續的開發工作（例如：在 index.html 檔案中增添內容）。
-每當要觀察新的結果，得經過 4 道人工操作的作業程序，開發工作因而形成「有些不便」。
+前版作業程序，已成功完成「個人開發環境」的初步建置。但在進行後續的開發工作，每當 .html 檔案的內容有所變更（例如：在 index.html 增添內容），
+非經如下所述 4 道操作程序，則無法看到變更後的輸出結果，故而使得開發作業「不夠順暢」。
 
-#### (1) 變更 index.html 內容。
+#### (1) 變更 index.html 檔案，加入內容： `<p>Developement process</p>` 。
 
 ```html
 <!DOCTYPE html>
@@ -131,28 +133,40 @@ __【前版待改善議題】__
 </html>
 ```
 
-#### (2) 終止 Docker Container 的執行。
+#### (2) 在瀏覽器輸入以下網址，觀察輸出結果，但還是看到原先之內容。
+
+```
+http://localhost:3000
+```
+
+#### (3) 終止 Docker Container 的執行。
 
 ```bash
 docker stop my-node-app-container
 ```
 
-#### (3) 移除 Docker Container 。
+#### (4) 移除 Docker Container 。
 
 ```bash
 docker rm my-node-app-container
 ```
 
-#### (4) 重新建置 Docker Image 檔案： my-node-app 。
+#### (5) 重新建置 Docker Image 檔案： my-node-app 。
 
 ```bash
 docker build -t my-node-app .
 ```
 
-#### (5) 重新啟動 Docker Container ： my-node-app-container。
+#### (6) 重新啟動 Docker Container ： my-node-app-container。
 
 ```bash
 docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
+```
+
+#### (7) 在瀏覽器輸入以下網址，觀察輸出結果，終於能看到變更後的新結果。
+
+```
+http://localhost:3000
 ```
 
 __【本版改善事項】__
@@ -162,7 +176,7 @@ __【本版改善事項】__
 變更作業程序「步驟 5」執行的指令，增添 -v 參數，透過 Volume 功能的特性，使得 Docker Container 與「專案目錄」產生連結關係，
 因而每當 .html 檔案的內容有所變更，瀏覽器就能觀察到最新的輸出結果。 
 
-### 5. 啟動 Docker Container ，執行開發中之「應用系統」。
+`5. 啟動 Docker Container ，執行開發中之「應用系統」。` 
 
 原 Bash 指令中，加入新參數： `-v $(pwd):/app` 。
 
@@ -178,7 +192,7 @@ __【驗證改善結果】__
 docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
 ```
 
-#### (2) 修訂 index.html ，加入 `Workflow` 內容。
+#### (2) 編輯檔案： index.html ，將內容： `Development process` ，改成 `Workflow for development process` 。
 
 ```html
 <!DOCTYPE html>
@@ -189,14 +203,14 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 </head>
 <body>
   <h1>Hello NodeJS</h1>
-  <p>Developement process</p>
+  <p>Workflow for developement process</p>
 </body>
 </html>
 ```
 
-#### (3) 使用瀏覽器操作開發中之「應用系統」，並觀察功能之輸出結果。
+#### (3) 在瀏覽器輸入以下網址，觀察開發中「應用系統」的輸出結果。
 
-```bash
+```
 http://localhost:3000
 ```
 
@@ -204,14 +218,14 @@ http://localhost:3000
 
 ## 「個人開發環境」建置作業程序 V0.3
 
-### 前版待改善議題
+__【前版待改善議題】__
 
 `「個人開發環境」建置作業程序 V0.2 ` ，改善了 .html 檔案內容有所變更，卻無法立即觀察結果的問題。
 但變更 .js 檔案，卻無法產生同樣的結果。
 
 例如：加入 API 功能
 
-(1) 編輯 app.js 檔案，加入 API 功能： GET /api/hello。
+#### (1) 編輯 app.js 檔案，加入 API 功能： GET /api/hello。
 
 ```javascript
 var express = require('express');
@@ -250,7 +264,7 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 
 (6) 再次自瀏覽器觀察 URL: http://localhost:3000/api/hello 的輸出結果。
 
-### 本版改善結果
+__【本版改善事項】__
 
 改善 `個人開發環境」建置作業程序 V0.2` 的問題，設定「改善目標」為：省去：「刪除 Docker Container」的步驟。
 
@@ -264,25 +278,36 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 docker run -it --name=my-node-app-container --rm -v $(pwd):/app -p 3000:3000 my-node-app
 ```
 
+__【驗證改善結果】__
+
+
 ---
 
 ## 「個人開發環境」建置作業程序 V0.4
 
-### 前版待改善議題
+__【前版待改善議題】__
 
 變更 .js 檔案，可立即觀察到結果。 ==> nodemon
 
-### 本版改善結果 
+__【本版改善事項】__ 
+
+
+__【驗證改善結果】__
+
 
 ---
 
 ## 「個人開發環境」建置作業程序 V0.5
 
-### 前版待改善議題
+__【前版待改善議題】__
 
 待開發系統需要用到 DB 時。 ==> docker-compose
 
-### 本版改善結果
+__【本版改善事項】__
+
+
+__【驗證改善結果】__
+
 
 ---
 
