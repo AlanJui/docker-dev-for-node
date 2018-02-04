@@ -100,20 +100,22 @@ docker build -t my-node-app .
 docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 ```
 
-### 6. 使用瀏覽器觀察執行輸出之結果。
+### 6. 使用瀏覽器操作開發中之「應用系統」，並觀察功能之輸出結果。
 
 ```bash
 http://localhost:3000
 ```
 
+---
+
 ## 「個人開發環境」建置作業程序 V0.2
 
-### 前版待改善議題
+__【前版待改善議題】__
 
 上述之「個人開發環境」雖已可用，但在進行後續的開發工作（例如：在 index.html 檔案中增添內容）。
 每當要觀察新的結果，得經過 4 道人工操作的作業程序，開發工作因而形成「有些不便」。
 
-(0) 變更 index.html 內容。
+#### (1) 變更 index.html 內容。
 
 ```html
 <!DOCTYPE html>
@@ -129,44 +131,76 @@ http://localhost:3000
 </html>
 ```
 
-(1) 終止 Docker Container 的執行。
+#### (2) 終止 Docker Container 的執行。
 
 ```bash
 docker stop my-node-app-container
 ```
 
-(2) 移除 Docker Container 。
+#### (3) 移除 Docker Container 。
 
 ```bash
 docker rm my-node-app-container
 ```
 
-(3) 重新建置 Docker Image 檔案： my-node-app 。
+#### (4) 重新建置 Docker Image 檔案： my-node-app 。
 
 ```bash
 docker build -t my-node-app .
 ```
 
-(4) 重新啟動 Docker Container ： my-node-app-container。
+#### (5) 重新啟動 Docker Container ： my-node-app-container。
 
 ```bash
 docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
 ```
 
-### 本版改善結果
+__【本版改善事項】__
 
+為改善前版之問題，設定本版「改善目標」：當 .html 檔案的內容有所變更時，可以不必重新建置 Docker Container ，便能觀察變更後最新輸出的結果。
 
-改善上述問題，設定「改善目標」為：當 .html 檔案的內容有所變更時，不必重新建置 Docker Container 便能觀察變更後的結果。
+變更作業程序「步驟 5」執行的指令，增添 -v 參數，透過 Volume 功能的特性，使得 Docker Container 與「專案目錄」產生連結關係，
+因而每當 .html 檔案的內容有所變更，瀏覽器就能觀察到最新的輸出結果。 
 
-變更「作業程序」中「步驟(5)」的 Bash 指令，使用 Docker 中的 -v 參數（Volume），要求 Docker Container 得與「專案目錄」產生連結關係，只要「原始程式碼」檔案內容有任何變更時，都能自 Docker Container 觀察到變更後的最新結果。 
-
-(5) 啟動 Docker Container 與執行「開發中系統」。
+### 5. 啟動 Docker Container ，執行開發中之「應用系統」。
 
 原 Bash 指令中，加入新參數： `-v $(pwd):/app` 。
 
 ```bash
 docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
 ```
+
+__【驗證改善結果】__
+
+#### (1) 啟動 Docker Container ，執行開發中之「應用系統」。
+
+```bash
+docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
+```
+
+#### (2) 修訂 index.html ，加入 `Workflow` 內容。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Docker DEV Workflow</title>
+</head>
+<body>
+  <h1>Hello NodeJS</h1>
+  <p>Developement process</p>
+</body>
+</html>
+```
+
+#### (3) 使用瀏覽器操作開發中之「應用系統」，並觀察功能之輸出結果。
+
+```bash
+http://localhost:3000
+```
+
+---
 
 ## 「個人開發環境」建置作業程序 V0.3
 
