@@ -41,13 +41,13 @@ CMD     ["node", "app.js"]
 
 ### 2. 建立專案套件管理檔案
 
-(1) 指定 NodeJS 引擎版本。以下案例之 n ，可改用 nvm 或其它。
+__(1) 指定 NodeJS 引擎版本。以下案例之 n ，可改用 nvm 或其它。__
 
 ```bash
 n 4.7.0
 ```
 
-(2) 建立「專案套件管理」 檔案： package.json。
+__(2) 建立「專案套件管理」 檔案： package.json。__
 
 ```bash
 npm init -y
