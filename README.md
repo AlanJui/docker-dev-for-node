@@ -58,7 +58,7 @@ npm install --save express
 
 完成初步之「系統架構」，撰寫以下之原始程式碼：
 
-(1) 建立系統之主程式檔： /app/app.js
+__(1) 建立系統之主程式檔： /app/app.js。__
         
 ```javascript
 var express = require('express');
@@ -69,7 +69,7 @@ app.use(express.static('public'));
 app.listen(3000);
 ```    
 
-(2) 建立畫面之「首頁檔」： /app/public/index.html
+__(2) 建立畫面之「首頁檔」： /app/public/index.html。__
   
 ```html
 <!DOCTYPE html>
