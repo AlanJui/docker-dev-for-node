@@ -204,12 +204,12 @@ __【本版改善事項】__
 變更作業程序「步驟 5」執行的指令，增添 -v 參數，透過 Volume 功能的特性，使得 Docker Container 與「專案目錄」產生連結關係，
 因而每當 .html 檔案的內容有所變更，瀏覽器就能觀察到最新的輸出結果。 
 
-`5. 啟動 Docker Container ，執行開發中之「應用系統」。` 
+__`5. 啟動 Docker Container ，執行開發中之「應用系統」。`__ 
 
 原 Bash 指令中，加入新參數： `-v $(pwd):/app` 。
 
 ```bash
-docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
+docker run -it --name=web -v $(pwd):/app -p 3000:3000 node-app
 ```
 
 __【驗證改善結果】__
@@ -226,7 +226,7 @@ docker kill web
 docker rm web
 ```
 
-#### (3) 重新啟動 Docker Container：my-node-app-container，執行開發中之「應用系統」。
+#### (3) 重新啟動 Docker Container：web，執行開發中之「應用系統」。
 
 ```bash
 docker run -it --name=web -v $(pwd):/app -p 3000:3000 node-app
@@ -267,6 +267,14 @@ __【前版待改善議題】__
 
 #### (1) 編輯 app.js 檔案，加入 API 功能： GET /api/hello。
 
+加入如下內容：
+```javascript
+app.get('/api/hello', function (req, res) {
+  res.send('world');
+});
+```
+    
+最後結果：
 ```javascript
 var express = require('express');
 var app = express();
@@ -303,9 +311,17 @@ docker run -it --name=web -v $(pwd):/app -p 3000:3000 node-app
 ```
 
 #### (6) 在瀏覽器輸入以下網址，觀察輸出結果，終於能看到變更後的新結果。
-         
+
+**輸入網址：**
+ 
 ```
 http://localhost:3000/api/hello
+```
+
+**輸出結果：**
+ 
+```
+world
 ```
 
 
@@ -369,12 +385,45 @@ docker build -t node-app .
 docker run -it --name=web -v $(pwd):/app -p 3000:3000 node-app
 ```
 
-#### (6) 變更 API 。
+#### (6) 變更 API ，令 GET /api/hello 的輸出結果為： docker。
+
+修訂 app.js 檔案的內容，
+
+```javascript
+...
+res.send('docker');
+...
+```
+
+最後結果：
+```javascript
+var express = require('express');
+var app = express();
+
+app.use(express.static('public'));
+
+app.get('/api/hello', function (req, res) {
+  res.send('docker');
+});
+
+app.listen(3000);
+```
 
 #### (5) 在瀏覽器觀察立即看到最新結果 。
 
+在瀏覽器輸入以下網址，觀察輸出結果，終於能看到變更後的新結果。
 
+**輸入網址：**
+ 
+```
+http://localhost:3000/api/hello
+```
 
+**輸出結果：**
+ 
+```
+docker
+```
 
 
 
