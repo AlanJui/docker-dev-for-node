@@ -4,12 +4,16 @@
   "description": "以 NodeJS + Express 開發 App 為題，闡述「系統開發作業」， 若是導入「Docker Compose + Docker Machine」之 VM 虛擬化技術， 在作業流程應安排之程序，及該注意之事項。",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "Alan Jui",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.12"
   }
 }

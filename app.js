@@ -4,7 +4,7 @@ var app = express();
 app.use(express.static('public'));
 
 app.get('/api/hello', function (req, res) {
-  res.send('hello world fro NodeJS');
+  res.send('hello world');
 });
 
 app.listen(3000);

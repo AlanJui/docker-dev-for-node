@@ -38,7 +38,7 @@ COPY    . /app
 WORKDIR /app
 
 RUN     cd /app; npm install npm@5.6.0 -g; npm install
-CMD     ["node", "app.js"]
+CMD     ["npm", "start"]
 ```    
 
 ### 2. 建立專案套件管理檔案
@@ -53,7 +53,35 @@ n 4.7.0
 
 ```bash
 npm init -y
+```
+
+#### (3) 安裝套件： express。
+
+```bash
 npm install --save express
+```
+
+#### (4) 加入啟動功能： `npm start` 。
+
+在 "scripts" 中，加入 "start" 描述。
+
+```npm
+{
+  "name": "docker-dev-workflow-express",
+  "version": "1.0.0",
+  "description": "以 NodeJS + Express 開發 App 為題，闡述「系統開發作業」， 若是導入「Docker Compose + Docker Machine」之 VM 虛擬化技術， 在作業流程應安排之程序，及該注意之事項。",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "Alan Jui",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
 ```
 
 ### 3. 執行「系統開發」之「程式碼撰寫」工作。
@@ -91,15 +119,15 @@ app.listen(3000);
 自本前所在之目錄，透過 Dockerfile 腳本檔案內的建置指示，建置 Docker Image 檔案，並將輸出的檔案命名為：node-app 。
 
 ```bash
-docker build -t my-node-app .
+docker build -t node-app .
 ```    
 
 ### 5. 啟動 Docker Container ，執行開發中之「應用系統」。
 
-自已建置的 Docker Image 檔案：my-node-app ，產生 Docker Container ，並將之命名為： my-node-app 。
+自已建置的 Docker Image 檔案：node-app ，產生 Docker Container ，並將之命名為： web 。
 
 ```bash
-docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
+docker run -it --name=web -p 3000:3000 node-app
 ```
 
 ### 6. 在瀏覽器輸入以下網址，觀察開發中「應用系統」的輸出結果。
@@ -142,25 +170,25 @@ http://localhost:3000
 #### (3) 終止 Docker Container 的執行。
 
 ```bash
-docker stop my-node-app-container
+docker stop web
 ```
 
 #### (4) 移除 Docker Container 。
 
 ```bash
-docker rm my-node-app-container
+docker rm web
 ```
 
-#### (5) 重新建置 Docker Image 檔案： my-node-app 。
+#### (5) 重新建置 Docker Image 檔案： node-app 。
 
 ```bash
-docker build -t my-node-app .
+docker build -t node-app .
 ```
 
-#### (6) 重新啟動 Docker Container ： my-node-app-container。
+#### (6) 重新啟動 Docker Container ：web。
 
 ```bash
-docker run -it --name=my-node-app-container -p 3000:3000 my-node-app
+docker run -it --name=web -p 3000:3000 node-app
 ```
 
 #### (7) 在瀏覽器輸入以下網址，觀察輸出結果，終於能看到變更後的新結果。
@@ -186,13 +214,25 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 
 __【驗證改善結果】__
 
-#### (1) 啟動 Docker Container ，執行開發中之「應用系統」。
+#### (1) 終止 Docker Container 。
 
 ```bash
-docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
+docker kill web
 ```
 
-#### (2) 編輯檔案： index.html ，將內容： `Development process` ，改成 `Workflow for development process` 。
+#### (2) 刪除 Docker Container 。
+
+```bash
+docker rm web
+```
+
+#### (3) 重新啟動 Docker Container：my-node-app-container，執行開發中之「應用系統」。
+
+```bash
+docker run -it --name=web -v $(pwd):/app -p 3000:3000 node-app
+```
+
+#### (5) 編輯檔案： index.html ，將內容： `Development process` ，改成 `Workflow for development process` 。
 
 ```html
 <!DOCTYPE html>
@@ -208,7 +248,7 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 </html>
 ```
 
-#### (3) 在瀏覽器輸入以下網址，觀察開發中「應用系統」的輸出結果。
+#### (6) 在瀏覽器輸入以下網址，觀察開發中「應用系統」的輸出結果。
 
 ```
 http://localhost:3000
@@ -247,19 +287,19 @@ app.listen(3000);
 #### (3) 終止 Docker Container 。
 
 ```bash
-docker kill my-node-app-container
+docker kill web
 ```
 
 #### (4) 刪除 Docker Container 。
 
 ```bash
-docker rm my-node-app-container
+docker rm web
 ```
 
-#### (5) 重新啟動 Docker Container 。
+#### (5) 重新啟動 Docker Container：web，執行開發中之「應用系統」。
 
 ```bash
-docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-app
+docker run -it --name=web -v $(pwd):/app -p 3000:3000 node-app
 ```
 
 #### (6) 在瀏覽器輸入以下網址，觀察輸出結果，終於能看到變更後的新結果。
@@ -268,11 +308,77 @@ docker run -it --name=my-node-app-container -v $(pwd):/app -p 3000:3000 my-node-
 http://localhost:3000/api/hello
 ```
 
+
 __【本版改善事項】__
 
 變更 .js 檔案，可立即觀察到結果。 ==> nodemon
 
 __【驗證改善結果】__
+
+#### (1) 終止 Docker Container 。
+
+```bash
+docker kill web
+```
+
+#### (2) 刪除 Docker Container 。
+
+```bash
+docker rm web
+```
+
+#### (3) 安裝 nodemon 套件。
+
+```bash
+npm install --save-dev nodemon
+```
+
+#### (4) 修訂 package.json ，改 npm start。
+
+```npm
+{
+  "name": "docker-dev-workflow-express",
+  "version": "1.0.0",
+  "description": "以 NodeJS + Express 開發 App 為題，闡述「系統開發作業」， 若是導入「Docker Compose + Docker Machine」之 VM 虛擬化技術， 在作業流程應安排之程序，及該注意之事項。",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "Alan Jui",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.12"
+  }
+}
+```
+
+#### (4) 重新建置 Docker Image 檔案： node-app 。
+
+```bash
+docker build -t node-app .
+```
+
+#### (5) 重新啟動 Docker Container：web，執行開發中之「應用系統」。
+
+```bash
+docker run -it --name=web -v $(pwd):/app -p 3000:3000 node-app
+```
+
+#### (6) 變更 API 。
+
+#### (5) 在瀏覽器觀察立即看到最新結果 。
+
+
+
+
+
+
+
 
 
 ---

@@ -1,0 +1,10 @@
+*~
+.DS_Store
+*.vpp~1
+Thumbs.db
+*.vpp~*
+.idea/
+node_modules/
+npm-debug.log
+build/
+vendor/
