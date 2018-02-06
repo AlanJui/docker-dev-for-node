@@ -37,7 +37,7 @@ EXPOSE  5858
 COPY    . /app
 WORKDIR /app
 
-RUN     cd /app; npm install npm@5.6.0 -g; npm install
+RUN     cd /app; npm install
 CMD     ["npm", "start"]
 ```    
 
@@ -472,77 +472,123 @@ docker run -d -it --name=web -v $(pwd):/app -p 3000:3000 --link db node-app
 __【驗證改善結果】__
 
 
-``` bash
-docker run -d -it --name=db -p 27017:27017 mongo
-```
-
+### (1) 安裝連結資料庫相關套件。
 
 ```bash
-docker run -d -it --name=web -v $(pwd):/app -p 3000:3000 --link db node-app
+npm install --save mongodb assert body-parser
 ```
 
-#### (1) 安裝套件。
-
-```bash
-npm install --save mongodb body-parser
+最新 package.json 檔案內容：
+```npm
+{
+  "name": "docker-dev-workflow-express",
+  "version": "1.0.0",
+  "description": "以 NodeJS + Express 開發 App 為題，闡述「系統開發作業」， 若是導入「Docker Compose + Docker Machine」之 VM 虛擬化技術， 在作業流程應安排之程序，及該注意之事項。",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "Alan Jui",
+  "license": "ISC",
+  "dependencies": {
+    "assert": "^1.4.1",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongodb": "^3.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.12"
+  }
+}
 ```
 
-#### (2) 修訂 app.js 。
+### (2) 變更 app.js 檔案，加入資料處理功能。
 
 ```javascript
-var express = require('express');
-var app = express();
-var bodyparser = require('body-parser');
-var MongoClient = require('mongodb').MongoClient;
-var url = 'mongodb://' + process.env.MONGO_PORT_27017_TCP_ADDR + ':27017/dockerdemo';
+const express = require('express');
+const app = express();
+const bodyparser = require('body-parser');
+
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+
+// Connection URL
+// const url = 'mongodb://' + process.env.MONGO_PORT_27017_TCP_ADDR + ':27017';
+const url = 'mongodb://my-db:27017';
+const dbName = 'dockerdemo';
+
 var db;
 
-MongoClient.connect(url, function (err, database) {
-    console.log("Connected correctly to server");
-    db = database;
+MongoClient.connect(url, function (err, client) {
+  assert.equal(null, err);
+  console.log("Connected successfully to server");
+
+  db = client.db(dbName);
 });
 
 app.use(bodyparser.json());
 app.use(express.static('public'));
 
-var insertDocument = function (db, document, callback) {
-    // Get the documents collection
-    var collection = db.collection('documents');
-    // Insert some documents
-    collection.insertOne(document, function (err, result) {
-        callback(err, JSON.stringify(result.ops[0]));
-    });
+const insertDocument = function (db, document, callback) {
+
+  // Get the documents collection
+  const collection = db.collection('documents');
+  // Insert some documents
+  collection.insertOne(document, function (err, result) {
+    callback(err, JSON.stringify(result.ops[0]));
+  });
 };
 
 app.post('/api/hello', function (req, res) {
-    var data = req.body;
-    insertDocument(db, data, function(err, result) {
-        res.status(201).send(result)
-    })
+  var data = req.body;
+  insertDocument(db, data, function(err, result) {
+    res.status(201).send(result)
+  })
 });
 
 app.get('/api/hello', function (req, res) {
-    res.send('world');
+  res.send('docker');
 });
 
 app.listen(3000);
 ```
 
-#### ()
+### (3) 以 mongo V3.4 之 Docker Image，啟動名為：my-db 之 Docker Container ；啟動後之 Docker Container 以背景方式運作。 
+
+``` bash
+docker run -d -it --name=my-db -p 27017:27017 mongo:3.4
+```
+
+### (4) 再次啟動 Docker Container: web ，要求與 Docker Container: my-db 產生連結關係。
 
 ```bash
-docker run -d -it --name=web -v $(pwd):/app -p 3000:3000 --link db node-app
+docker run -d -it --name=web -v $(pwd):/app -p 3000:3000 --link my-db node-app
 ```
----
 
+### (5) 輸入如下指令，並觀察輸出：
+
+透過 curl 工具軟體，模擬發出 HTTP Post 。
+
+**輸入指令**
 ```bash
 curl -i -d '{"name": "Alan"}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/hello
 ```
 
+**輸出結果**
 ```bash
-curl -i -d "name=Alan" -H "Content-Type: application/x-www-form-urlencoded" -X POST http://localhost:3000/api/hello
-```
+HTTP/1.1 201 Created
+X-Powered-By: Express
+Content-Type: text/html; charset=utf-8
+Content-Length: 48
+ETag: W/"30-F7BBaClhWxd2qiookkXOfHHV4Gk"
+Date: Tue, 06 Feb 2018 03:05:55 GMT
+Connection: keep-alive
 
+{"name":"Amos","_id":"5a791b932c34b22b01c953b1"}%
+```
 
 
 
