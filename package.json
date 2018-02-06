@@ -11,7 +11,10 @@
   "author": "Alan Jui",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.2"
+    "assert": "^1.4.1",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongodb": "^3.0.2"
   },
   "devDependencies": {
     "nodemon": "^1.14.12"

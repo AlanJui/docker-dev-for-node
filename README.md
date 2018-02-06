@@ -451,11 +451,100 @@ __【前版待改善議題】__
 
 __【本版改善事項】__ 
 
+可利用 Docker Hub 已有現成的 Docker Image: mongo 。
+
+Docker Container 命名為：db 。
+
+``` bash
+docker run -d -it --name=my-db -p 27017:27017 mongo:3.4
+```
+
+啟動 Docker Container: web 的指令變更如下：
+
+加入： 
+ * --link db：與 Docker Container: db 連結；也就是啟動 web 之前，得先啟動 db
+ * -d：要求 Docker Container: web 改以「背景」模式執行
+
+```bash
+docker run -d -it --name=web -v $(pwd):/app -p 3000:3000 --link db node-app
+```
 
 __【驗證改善結果】__
 
 
+``` bash
+docker run -d -it --name=db -p 27017:27017 mongo
+```
+
+
+```bash
+docker run -d -it --name=web -v $(pwd):/app -p 3000:3000 --link db node-app
+```
+
+#### (1) 安裝套件。
+
+```bash
+npm install --save mongodb body-parser
+```
+
+#### (2) 修訂 app.js 。
+
+```javascript
+var express = require('express');
+var app = express();
+var bodyparser = require('body-parser');
+var MongoClient = require('mongodb').MongoClient;
+var url = 'mongodb://' + process.env.MONGO_PORT_27017_TCP_ADDR + ':27017/dockerdemo';
+var db;
+
+MongoClient.connect(url, function (err, database) {
+    console.log("Connected correctly to server");
+    db = database;
+});
+
+app.use(bodyparser.json());
+app.use(express.static('public'));
+
+var insertDocument = function (db, document, callback) {
+    // Get the documents collection
+    var collection = db.collection('documents');
+    // Insert some documents
+    collection.insertOne(document, function (err, result) {
+        callback(err, JSON.stringify(result.ops[0]));
+    });
+};
+
+app.post('/api/hello', function (req, res) {
+    var data = req.body;
+    insertDocument(db, data, function(err, result) {
+        res.status(201).send(result)
+    })
+});
+
+app.get('/api/hello', function (req, res) {
+    res.send('world');
+});
+
+app.listen(3000);
+```
+
+#### ()
+
+```bash
+docker run -d -it --name=web -v $(pwd):/app -p 3000:3000 --link db node-app
+```
 ---
+
+```bash
+curl -i -d '{"name": "Alan"}' -H "Content-Type: application/json" -X POST http://localhost:3000/api/hello
+```
+
+```bash
+curl -i -d "name=Alan" -H "Content-Type: application/x-www-form-urlencoded" -X POST http://localhost:3000/api/hello
+```
+
+
+
 
 ## 「個人開發環境」建置作業程序 V0.5
 
